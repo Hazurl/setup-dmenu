@@ -16,6 +16,14 @@ dmenu \- dynamic menu
 .IR color ]
 .RB [ \-nf
 .IR color ]
+.RB [ \-nhb
+.IR color ]
+.RB [ \-nhf
+.IR color ]
+.RB [ \-shb
+.IR color ]
+.RB [ \-shf
+.IR color ]
 .RB [ \-sb
 .IR color ]
 .RB [ \-sf
@@ -40,6 +48,18 @@ is a script used by
 .IR dwm (1)
 which lists programs in the user's $PATH and runs the result in their $SHELL.
 .SH OPTIONS
+.TP
+.BI \-nhb " color"
+defines the normal highlight background color.
+.TP
+.BI \-nhf " color"
+defines the normal highlight foreground color.
+.TP
+.BI \-shb " color"
+defines the selected highlight background color.
+.TP
+.BI \-shf " color"
+defines the selected highlight foreground color.
 .TP
 .B \-b
 dmenu appears at the bottom of the screen.
