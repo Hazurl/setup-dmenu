@@ -32,6 +32,7 @@ enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
 
 struct item {
 	char *text;
+	char *text_output;
 	struct item *left, *right;
 
 	int id; /* for multiselect */
@@ -40,6 +41,9 @@ struct item {
 static char numbers[NUMBERSBUFSIZE] = "";
 static char text[BUFSIZ] = "";
 static char *embed;
+static char separator;
+static int separator_greedy;
+static int separator_reverse;
 static int bh, mw, mh;
 static int inputw = 0, promptw;
 static int lrpad; /* sum of left and right padding */
@@ -553,7 +557,7 @@ insert:
 				if (selid[i] != -1 && (!sel || sel->id != selid[i]))
 					puts(items[selid[i]].text);
 			if (sel && !(ev->state & ShiftMask))
-				puts(sel->text);
+				puts(sel->text_output);
 			else
 				puts(text);
 			cleanup();
@@ -623,6 +627,18 @@ readstdin(void)
 			*p = '\0';
 		if (!(items[i].text = strdup(buf)))
 			die("cannot strdup %zu bytes:", strlen(buf) + 1);
+		if (separator && (p = separator_greedy ?
+		    strrchr(items[i].text, separator) : strchr(items[i].text, separator))) {
+			*p = '\0';
+			items[i].text_output = ++p;
+		} else {
+			items[i].text_output = items[i].text;
+		}
+		if (separator_reverse) {
+			p = items[i].text;
+			items[i].text = items[i].text_output;
+			items[i].text_output = p;
+		}
 		items[i].id = i; /* for multiselect */
 	}
 	if (items)
@@ -794,7 +810,8 @@ static void
 usage(void)
 {
 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
+	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n"
+	      "             [-d separator] [-D separator]\n", stderr);
 	exit(1);
 }
 
@@ -841,6 +858,11 @@ main(int argc, char *argv[])
 			embed = argv[++i];
 		else if (!strcmp(argv[i], "-bw"))
 			border_width = atoi(argv[++i]); /* border width */
+		else if (!strcmp(argv[i], "-d") || /* field separator */
+		         (separator_greedy = !strcmp(argv[i], "-D"))) {
+			separator = argv[++i][0];
+			separator_reverse = argv[i][1] == '|';
+		}
 		else
 			usage();
 
