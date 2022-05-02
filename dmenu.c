@@ -543,12 +543,16 @@ keypress(XKeyEvent *ev)
 		case XK_u: /* delete left */
 			insert(NULL, 0 - cursor);
 			break;
-		case XK_w: /* delete word */
-			while (cursor > 0 && strchr(worddelimiters, text[nextrune(-1)]))
-				insert(NULL, nextrune(-1) - cursor);
-			while (cursor > 0 && !strchr(worddelimiters, text[nextrune(-1)]))
-				insert(NULL, nextrune(-1) - cursor);
-			break;
+		case XK_BackSpace:
+			if (ev->state & ShiftMask) {
+				insert(NULL, -cursor);
+			} else {
+				while (cursor > 0 && strchr(worddelimiters, text[nextrune(-1)]))
+					insert(NULL, nextrune(-1) - cursor);
+				while (cursor > 0 && !strchr(worddelimiters, text[nextrune(-1)]))
+					insert(NULL, nextrune(-1) - cursor);
+			}
+			goto draw;
 		case XK_y: /* paste selection */
 		case XK_Y:
 			XConvertSelection(dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
