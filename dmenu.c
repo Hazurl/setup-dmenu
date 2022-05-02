@@ -553,8 +553,8 @@ keypress(XKeyEvent *ev)
 					insert(NULL, nextrune(-1) - cursor);
 			}
 			goto draw;
-		case XK_y: /* paste selection */
-		case XK_Y:
+		case XK_v: /* paste selection */
+		case XK_V:
 			XConvertSelection(dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
 			                  utf8, utf8, win, CurrentTime);
 			return;
